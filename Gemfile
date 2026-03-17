@@ -25,6 +25,8 @@ gem "jbuilder"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
+gem 'require_all'
+
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
 gem "solid_queue"
@@ -43,20 +45,24 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem 'bullet', github: 'flyerhzm/bullet', branch: 'main'
+  gem 'bundler-audit'
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
-
+  gem 'rspec-rails'
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
 
 group :development do
+  gem 'database_consistency', '~> 2.0.4', require: false
+  gem 'rubocop', '~> 1.62', require: false
+  gem 'rubocop-factory_bot', '~> 2.25', require: false
+  gem 'rubocop-rails', '~> 2.24', require: false
+  gem 'rubocop-rspec', '~> 3', require: false
+  gem 'rubocop-rspec_rails', '~> 2.30'
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
@@ -64,5 +70,11 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem 'database_cleaner-active_record'
   gem "selenium-webdriver"
+  gem 'rspec-mocks', '~> 3.13'
+  gem 'rspec-sqlimit'
+  gem 'shoulda-matchers', '~> 5.0'
+  gem 'simplecov', require: false
+  gem 'webmock'
 end
