@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['3.0']
+        ruby-version: ['4.0']
     services:
       postgres:
-        image: postgres:12.0
+        image: postgres:17.0
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -38,11 +38,11 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Install Ruby version specified in `.ruby-version`
       uses: eregon/use-ruby-action@master
     - name: Setup cache key and directory for gems cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: vendor/bundle
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
@@ -53,22 +53,18 @@ jobs:
       run: |
         gem update --system
         gem install bundler bundler-audit
-        bundle install --jobs 4 --retry 3 --path vendor/bundle
+        bundle config set path 'vendor/bundle'
+        bundle install --jobs 4 --retry 3
     - name: Prepare database
       env:
-        AVAILABLE_APP_SCHEMES: mealup
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/hotwire_kanban_board_test
-        REDIS_URL: redis://localhost:6379/0
         RAILS_ENV: test
         RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432
       run: |
         bundle exec rails db:create db:schema:load
     - name: Run tests
       env:
-        AVAILABLE_APP_SCHEMES: mealup
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/hotwire_kanban_board_test
-        REDIS_URL: redis://localhost:6379/0
         RAILS_ENV: test
         RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-        WITH_SUBSCRIPTIONS: true
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432
       run: bundle exec rspec
