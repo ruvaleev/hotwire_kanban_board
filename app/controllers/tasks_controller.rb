@@ -45,13 +45,23 @@ class TasksController < ApplicationController
     end
   end
 
-  def move
+  def move # rubocop:disable Metrics/MethodLength
     target_column = @board.columns.find(params[:target_column_id])
     @old_column = @task.column
-    @task.update!(column: target_column, position: (target_column.tasks.maximum(:position) || 0) + 1)
+    Task.suppressing_turbo_broadcasts do
+      @task.update!(column: target_column, position: (target_column.tasks.maximum(:position) || 0) + 1)
+    end
+
+    Turbo::StreamsChannel.broadcast_render_to(
+      [@board, 'tasks'],
+      partial: 'tasks/move',
+      locals: { task: @task, old_column: @old_column, board: @board }
+    )
 
     respond_to do |format|
-      format.turbo_stream
+      format.turbo_stream do
+        render partial: 'tasks/move', locals: { task: @task, old_column: @old_column, board: @board, show_flash: true }
+      end
       format.html { redirect_to @board }
     end
   end
