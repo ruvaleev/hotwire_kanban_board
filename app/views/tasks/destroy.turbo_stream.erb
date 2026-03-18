@@ -1,0 +1,11 @@
+<%# Remove the task card from the DOM %>
+<%= turbo_stream.remove dom_id(@task) %>
+
+<%# Update the task count %>
+<%= turbo_stream.update dom_id(@column, :count) do %>
+  <%= @column.tasks.count %>
+<% end %>
+
+<%= turbo_stream.prepend "flash" do %>
+  <%= render partial: "shared/flash", locals: { type: "notice", message: "Task deleted!" } %>
+<% end %>

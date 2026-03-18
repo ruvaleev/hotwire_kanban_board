@@ -1,0 +1,22 @@
+<div class="w-full">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-800">Kanban Boards</h1>
+    <%= link_to "New Board", new_board_path, class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" %>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @boards.each do |board| %>
+      <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition">
+        <h2 class="text-xl font-semibold mb-2"><%= board.name %></h2>
+        <p class="text-gray-500 text-sm mb-4"><%= board.columns.count %> columns</p>
+        <div class="flex gap-2">
+          <%= link_to "Open", board_path(board), class: "bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm" %>
+          <%= link_to "Edit", edit_board_path(board), class: "bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 transition text-sm" %>
+          <%= button_to "Delete", board_path(board), method: :delete,
+              class: "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm",
+              data: { turbo_confirm: "Are you sure you want to delete this board?" } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

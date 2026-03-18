@@ -1,0 +1,38 @@
+<%# Each column is wrapped in a turbo_frame so it can be independently updated %>
+<%= turbo_frame_tag dom_id(column) do %>
+  <div class="bg-gray-100 rounded-lg p-4 min-w-[320px] w-80 flex-shrink-0">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="font-bold text-gray-700 text-lg"><%= column.name %></h2>
+      <span class="bg-gray-300 text-gray-600 text-xs font-semibold px-2 py-1 rounded-full"
+            id="<%= dom_id(column, :count) %>">
+        <%= column.tasks.size %>
+      </span>
+    </div>
+
+    <%# Task list container — Turbo Streams will append/remove tasks here %>
+    <div id="<%= dom_id(column, :tasks) %>" class="space-y-3 min-h-[50px]"
+         data-controller="drag"
+         data-drag-board-id-value="<%= board.id %>"
+         data-drag-column-id-value="<%= column.id %>">
+      <% column.tasks.each do |task| %>
+        <%= render partial: "tasks/task", locals: { task: task, board: board } %>
+      <% end %>
+    </div>
+
+    <%# Toggle new task form with Stimulus %>
+    <div class="mt-3" data-controller="toggle">
+      <button data-action="click->toggle#toggle"
+              data-toggle-target="button"
+              class="w-full text-gray-500 hover:text-gray-700 text-sm py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition">
+        + Add task
+      </button>
+
+      <div data-toggle-target="content" class="hidden">
+        <%= turbo_frame_tag dom_id(column, :new_task) do %>
+          <%= render partial: "tasks/form",
+                     locals: { task: column.tasks.build, board: board, column: column } %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

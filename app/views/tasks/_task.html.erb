@@ -1,0 +1,35 @@
+<%# Each task is a turbo_frame — clicking "Edit" replaces it inline with the edit form %>
+<%= turbo_frame_tag dom_id(task) do %>
+  <div class="bg-white rounded-lg shadow p-3 cursor-grab active:cursor-grabbing"
+       id="<%= dom_id(task, :card) %>"
+       draggable="true"
+       data-drag-target="item"
+       data-task-id="<%= task.id %>">
+    <div class="flex justify-between items-start">
+      <h3 class="font-medium text-gray-800 text-sm"><%= task.title %></h3>
+      <div class="flex gap-1 ml-2 flex-shrink-0">
+        <%= link_to "✎", edit_board_column_task_path(board, task.column, task),
+            class: "text-gray-400 hover:text-blue-600 text-xs" %>
+        <%= button_to "✕", board_column_task_path(board, task.column, task),
+            method: :delete,
+            class: "text-gray-400 hover:text-red-600 text-xs",
+            data: { turbo_confirm: "Delete this task?" } %>
+      </div>
+    </div>
+    <% if task.description.present? %>
+      <p class="text-gray-500 text-xs mt-1 line-clamp-2"><%= task.description %></p>
+    <% end %>
+
+    <%# "Move to" dropdown — Turbo Stream removes from old column and appends to new %>
+    <div class="mt-2">
+      <%= form_with(url: move_board_column_task_path(board, task.column, task),
+                    method: :patch, class: "flex items-center gap-1") do |f| %>
+        <%= f.select :target_column_id,
+            task.column.board.columns.where.not(id: task.column_id).map { |c| [c.name, c.id] },
+            { prompt: "Move to…" },
+            class: "text-xs border border-gray-200 rounded px-1 py-0.5 text-gray-500",
+            onchange: "this.form.requestSubmit()" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,42 @@
+<%# Task form used for both new and edit — rendered inside a turbo_frame %>
+<%= turbo_frame_tag(task.persisted? ? dom_id(task) : dom_id(column, :new_task)) do %>
+  <div class="bg-white rounded-lg shadow p-3">
+    <%= form_with(model: task, url: task.persisted? ? board_column_task_path(board, column, task) : board_column_tasks_path(board, column),
+                  class: "space-y-2") do |f| %>
+      <% if task.errors.any? %>
+        <div class="text-red-600 text-xs">
+          <% task.errors.full_messages.each do |msg| %>
+            <p><%= msg %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.text_field :title, placeholder: "Task title",
+            class: "w-full border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            autofocus: true %>
+      </div>
+
+      <%# Character counter driven by Stimulus %>
+      <div data-controller="char-counter">
+        <%= f.text_area :description, placeholder: "Description (optional)",
+            rows: 2,
+            class: "w-full border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            data: { char_counter_target: "input", action: "input->char-counter#count" } %>
+        <span class="text-xs text-gray-400" data-char-counter-target="counter">0 characters</span>
+      </div>
+
+      <div class="flex gap-2">
+        <%= f.submit task.persisted? ? "Update" : "Add",
+            class: "bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition cursor-pointer" %>
+        <% if task.persisted? %>
+          <%= link_to "Cancel", board_column_task_path(board, column, task),
+              class: "bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition" %>
+        <% else %>
+          <button type="button" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition"
+                  data-action="click->toggle#toggle">Cancel</button>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
