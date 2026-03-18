@@ -57,6 +57,8 @@ Metrics/BlockLength:
     - 'app/api/v1/**/*.rb'
     - 'config/**/*'
     - 'spec/**/*'
+Rails/I18nLocaleTexts:
+  Enabled: false
 Rails/SkipsModelValidations:
   Exclude:
     - 'spec/**/*'

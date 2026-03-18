@@ -1,0 +1,21 @@
+<div class="w-full">
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex items-center gap-4">
+      <%= link_to "&larr; Boards".html_safe, boards_path, class: "text-blue-600 hover:text-blue-800" %>
+      <h1 class="text-3xl font-bold text-gray-800"><%= @board.name %></h1>
+    </div>
+  </div>
+
+  <%# Subscribe to ActionCable broadcasts for real-time updates %>
+  <%= turbo_stream_from @board, 'columns' %>
+  <%= turbo_stream_from @board, 'tasks' %>
+
+  <div class="flex gap-6 overflow-x-auto pb-4">
+    <% @board.columns.each do |column| %>
+      <%# Turbo Frame for lazy-loading each column's tasks %>
+      <%= turbo_frame_tag dom_id(column), src: "", loading: "eager" do %>
+        <%= render partial: "boards/column", locals: { column: column, board: @board } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

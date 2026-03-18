@@ -1,0 +1,26 @@
+<% task = local_assigns[:task] || @task %>
+<% board = local_assigns[:board] || @board %>
+<% old_column = local_assigns[:old_column] || @old_column %>
+
+<%# Remove task from old column %>
+<%= turbo_stream.remove dom_id(task) %>
+
+<%# Append task to new column %>
+<%= turbo_stream.append dom_id(task.column, :tasks) do %>
+  <%= render partial: "tasks/task", locals: { task:, board: } %>
+<% end %>
+
+<%# Update both column counts %>
+<%= turbo_stream.update dom_id(old_column, :count) do %>
+  <%= old_column.tasks.count %>
+<% end %>
+
+<%= turbo_stream.update dom_id(task.column, :count) do %>
+  <%= task.column.tasks.count %>
+<% end %>
+
+<% if local_assigns.fetch(:show_flash, false) %>
+  <%= turbo_stream.prepend "flash" do %>
+    <%= render partial: "shared/flash", locals: { type: "notice", message: "Task moved to #{task.column.name}!" } %>
+  <% end %>
+<% end %>

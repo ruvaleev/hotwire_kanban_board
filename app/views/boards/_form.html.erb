@@ -1,0 +1,19 @@
+<%= form_with(model: board, class: "space-y-4") do |f| %>
+  <% if board.errors.any? %>
+    <div class="bg-red-50 text-red-700 p-4 rounded-lg">
+      <% board.errors.full_messages.each do |msg| %>
+        <p><%= msg %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_field :name, class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500", autofocus: true %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer" %>
+    <%= link_to "Cancel", boards_path, class: "bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition" %>
+  </div>
+<% end %>

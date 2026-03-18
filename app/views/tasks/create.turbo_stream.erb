@@ -1,0 +1,19 @@
+<%# Append the new task to the column's task list %>
+<%= turbo_stream.append dom_id(@column, :tasks) do %>
+  <%= render partial: "tasks/task", locals: { task: @task, board: @board } %>
+<% end %>
+
+<%# Clear the new task form %>
+<%= turbo_stream.update dom_id(@column, :new_task) do %>
+  <%= render partial: "tasks/form", locals: { task: @column.tasks.build, board: @board, column: @column } %>
+<% end %>
+
+<%# Update the task count in the column header %>
+<%= turbo_stream.update dom_id(@column, :count) do %>
+  <%= @column.tasks.count %>
+<% end %>
+
+<%# Flash notification %>
+<%= turbo_stream.prepend "flash" do %>
+  <%= render partial: "shared/flash", locals: { type: "notice", message: "Task created!" } %>
+<% end %>
